@@ -1,0 +1,6 @@
+# Bí mật triển khai (scriptId + ID Google Sheet) — KHÔNG đẩy lên GitHub
+apps-script/.clasp.json
+# Rác hệ thống
+.DS_Store
+node_modules/
+*.log
