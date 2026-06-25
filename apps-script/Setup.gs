@@ -54,16 +54,16 @@ function setup_(withDemo) {
   seedConfig_();
   CacheService.getScriptCache().remove('CONFIG');
 
-  // [TC-HC] Nhân sự mẫu ĐỦ CẤP cho Phòng Tổ chức Hành chính (đổi PIN/đổi tên sau khi đăng nhập).
+  // [TC-HC] Nhân sự mẫu ĐỦ CẤP cho Phòng Tổ chức Cán bộ (đổi PIN/đổi tên sau khi đăng nhập).
   // Kiểm tra theo MÃ -> idempotent, re-run an toàn (ADMIN ẩn ở Script Property, không nằm ở đây).
   var mSheet = ss.getSheetByName(SH_MEMBERS);
   var _have = {};
   mSheet.getDataRange().getValues().slice(1).forEach(function (r) { _have[String(r[0]).trim().toUpperCase()] = true; });
   var _seedRoster = [
-    ['TP01', 'Trưởng phòng', hashPin_('123456'), ROLE.HEAD,   'Trưởng phòng Tổ chức Hành chính', true, nowIso_(), '[]'],
-    ['PP01', 'Phó phòng',    hashPin_('123456'), ROLE.DEPUTY, 'Phó phòng Tổ chức Hành chính',    true, nowIso_(), '[]'],
-    ['NV01', 'Nhân viên 1',  hashPin_('123456'), ROLE.STAFF,  'Nhân viên Tổ chức Hành chính',    true, nowIso_(), '[]'],
-    ['NV02', 'Nhân viên 2',  hashPin_('123456'), ROLE.STAFF,  'Nhân viên Tổ chức Hành chính',    true, nowIso_(), '[]']
+    ['TP01', 'Trưởng phòng', hashPin_('123456'), ROLE.HEAD,   'Trưởng phòng Tổ chức Cán bộ', true, nowIso_(), '[]'],
+    ['PP01', 'Phó phòng',    hashPin_('123456'), ROLE.DEPUTY, 'Phó phòng Tổ chức Cán bộ',    true, nowIso_(), '[]'],
+    ['NV01', 'Nhân viên 1',  hashPin_('123456'), ROLE.STAFF,  'Nhân viên Tổ chức Cán bộ',    true, nowIso_(), '[]'],
+    ['NV02', 'Nhân viên 2',  hashPin_('123456'), ROLE.STAFF,  'Nhân viên Tổ chức Cán bộ',    true, nowIso_(), '[]']
   ];
   _seedRoster.forEach(function (r) { if (!_have[r[0]]) mSheet.appendRow(r); });
   Logger.log('Đã tạo nhân sự mẫu: TP01 (Trưởng phòng), PP01 (Phó phòng), NV01/NV02 (Nhân viên) — PIN 123456, HÃY ĐỔI.');
@@ -93,6 +93,7 @@ function migrate_() {
   ensureSheet_(ss, SH_CHATS, CHAT_COLS);
   ensureSheet_(ss, SH_MESSAGES, MSG_COLS);
   migrateRolesAndConfig_();
+  migrateHanhChinhToCanBo_(); // [TC-HC] đổi "Tổ chức Hành chính" -> "Tổ chức Cán bộ" trên dữ liệu đã seed
   ensureAdminConfig_();   // ADMIN: credentials ở Script Property (ẨN), XOÁ khỏi sheet Members
   formatSheets_(); // mỗi lần migrate -> định dạng lại sheet cho gọn gàng
 }
@@ -186,10 +187,43 @@ function migrateRolesAndConfig_() {
     var cv = cSheet.getDataRange().getValues();
     for (var j = 1; j < cv.length; j++) {
       if (String(cv[j][0]).trim() === 'DepartmentName' && /Truyền [Tt]hông/.test(String(cv[j][1]))) {
-        cSheet.getRange(j + 1, 2).setValue('Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2');
+        cSheet.getRange(j + 1, 2).setValue('Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2');
         CacheService.getScriptCache().remove('CONFIG');
-        Logger.log('Đã đổi tên đơn vị sang: Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2.');
+        Logger.log('Đã đổi tên đơn vị sang: Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2.');
       }
+    }
+  }
+}
+// [TC-HC] Đổi tên "Tổ chức Hành chính" -> "Tổ chức Cán bộ" trên dữ liệu ĐÃ seed (idempotent):
+//  - DepartmentName trong sheet Config.
+//  - Cột title của nhân sự trong sheet Members.
+// Chạy 1 lần qua migrate_ khi bump MIG_VERSION. Dùng substring replace -> không đè tuỳ biến khác.
+function migrateHanhChinhToCanBo_() {
+  var OLD = 'Tổ chức Hành chính', NEW = 'Tổ chức Cán bộ';
+  var ss = getSS_();
+  // 1) Config DepartmentName
+  var cSheet = ss.getSheetByName(SH_CONFIG);
+  if (cSheet && cSheet.getLastRow() > 1) {
+    var cv = cSheet.getDataRange().getValues();
+    for (var j = 1; j < cv.length; j++) {
+      if (String(cv[j][0]).trim() === 'DepartmentName' && String(cv[j][1]).indexOf(OLD) >= 0) {
+        cSheet.getRange(j + 1, 2).setValue(String(cv[j][1]).split(OLD).join(NEW));
+        CacheService.getScriptCache().remove('CONFIG');
+        Logger.log('Đã đổi DepartmentName: ' + OLD + ' -> ' + NEW + '.');
+      }
+    }
+  }
+  // 2) Member titles
+  var mSheet = ss.getSheetByName(SH_MEMBERS);
+  if (mSheet && mSheet.getLastRow() > 1) {
+    var titleCol = MEMBER_COLS.indexOf('title'); // 0-based
+    if (titleCol >= 0) {
+      var mv = mSheet.getDataRange().getValues(), changed = 0;
+      for (var i = 1; i < mv.length; i++) {
+        var t = String(mv[i][titleCol]);
+        if (t.indexOf(OLD) >= 0) { mSheet.getRange(i + 1, titleCol + 1).setValue(t.split(OLD).join(NEW)); changed++; }
+      }
+      if (changed) Logger.log('Đã đổi chức danh nhân sự (' + OLD + ' -> ' + NEW + '): ' + changed + '.');
     }
   }
 }
@@ -212,7 +246,7 @@ function seedConfig_() {
   for (var i = 1; i < values.length; i++) existing[String(values[i][0]).trim()] = true;
 
   var defaults = [
-    ['DepartmentName', 'Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2', 'Tên đơn vị hiển thị trên giao diện'],
+    ['DepartmentName', 'Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2', 'Tên đơn vị hiển thị trên giao diện'],
     ['KPI_De', 1, 'Điểm KPI cho công việc mức Dễ'],
     ['KPI_BinhThuong', 2, 'Điểm KPI cho công việc mức Bình thường'],
     ['KPI_NangCao', 3, 'Điểm KPI cho công việc mức Nâng cao'],
@@ -233,8 +267,8 @@ function seedDemo_() {
   readMembers_().forEach(function (m) { have[m.code] = true; });
   // [TC-HC] Chỉ nhân sự PHÒNG (đã gỡ Production Crew). Tên là placeholder, đổi sau.
   var demoMembers = [
-    ['NV03', 'Nhân viên 3', hashPin_('123456'), ROLE.STAFF, 'Nhân viên Tổ chức Hành chính', true, nowIso_()],
-    ['NV04', 'Nhân viên 4', hashPin_('123456'), ROLE.STAFF, 'Nhân viên Tổ chức Hành chính', true, nowIso_()]
+    ['NV03', 'Nhân viên 3', hashPin_('123456'), ROLE.STAFF, 'Nhân viên Tổ chức Cán bộ', true, nowIso_()],
+    ['NV04', 'Nhân viên 4', hashPin_('123456'), ROLE.STAFF, 'Nhân viên Tổ chức Cán bộ', true, nowIso_()]
   ];
   demoMembers.forEach(function (r) { if (!have[r[0]]) mSheet.appendRow(r); });
 

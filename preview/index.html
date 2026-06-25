@@ -297,7 +297,7 @@ input:focus, select:focus, textarea:focus { outline: none; background: rgba(255,
 .brand .brand-sub { font-size: 13px; color: var(--c-text-muted); font-weight: 500; }
 
 .nav { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
-/* Hai KHU VỰC riêng biệt trong sidebar: Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2 & Production Crew */
+/* Hai KHU VỰC riêng biệt trong sidebar: Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2 & Production Crew */
 .nav-group { display: flex; flex-direction: column; gap: 6px; }
 .nav-group-title { font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 14px 2px; display: flex; align-items: center; gap: 6px; color: var(--c-text-faint); }
 .nav-zone-dept, .nav-zone-prod { border-radius: 22px; padding: 8px 6px; }
@@ -787,7 +787,7 @@ thead th{ background: rgba(255,255,255,0.34); }
  var PRIORITY_RANK = { 'Khẩn cấp': 0, 'Cao': 1, 'Bình thường': 2, 'Thấp': 3 };
  var PRIORITY_CLASS = { 'Thấp': 'pri--low', 'Bình thường': 'pri--normal', 'Cao': 'pri--high', 'Khẩn cấp': 'pri--urgent' };
  var PROJ_STATUS = { ACTIVE: 'Đang thực hiện', COMPLETED: 'Đã hoàn thành' };
- // Phần phụ công việc (Phòng Tổ chức Hành chính) — KHÔNG áp dụng cho task Production Crew.
+ // Phần phụ công việc (Phòng Tổ chức Cán bộ) — KHÔNG áp dụng cho task Production Crew.
  var WORK_CATEGORIES = ['Admin', 'Design', 'Digital marketing', 'Facebook', 'TikTok', 'Multimedia', 'PR', 'Internal communications'];
 
  var chartInstances = {};
@@ -944,11 +944,11 @@ thead th{ background: rgba(255,255,255,0.34); }
  function mockAdminUser() { return { code: 'ADMIN', name: 'ADMIN', role: ROLE.ADMIN, title: 'Quản trị hệ thống', active: true, grants: [], avatar: '' }; }
  function mockSeed() {
    var members = [
-     { code: 'TP01', name: 'Trưởng phòng', pin: '123456', role: ROLE.HEAD, title: 'Trưởng phòng Tổ chức Hành chính', active: true, createdAt: getLocalIso() },
+     { code: 'TP01', name: 'Trưởng phòng', pin: '123456', role: ROLE.HEAD, title: 'Trưởng phòng Tổ chức Cán bộ', active: true, createdAt: getLocalIso() },
      { code: 'PP01', name: 'Lê Minh Phó', pin: '123456', role: ROLE.DEPUTY, title: 'Phó phòng Nội dung', active: true, createdAt: getLocalIso() },
      { code: 'NV01', name: 'Nguyễn An', pin: '123456', role: ROLE.STAFF, title: 'Nhân viên Thiết kế', active: true, createdAt: getLocalIso() },
      { code: 'NV02', name: 'Trần Bình', pin: '123456', role: ROLE.STAFF, title: 'Nhân viên Nội dung', active: true, createdAt: getLocalIso() },
-     { code: 'NV03', name: 'Phạm Chi', pin: '123456', role: ROLE.STAFF, title: 'Nhân viên Tổ chức Hành chính', active: true, createdAt: getLocalIso() }
+     { code: 'NV03', name: 'Phạm Chi', pin: '123456', role: ROLE.STAFF, title: 'Nhân viên Tổ chức Cán bộ', active: true, createdAt: getLocalIso() }
    ];
    var kpiTargets = { 'NV01': 10, 'NV02': 10, 'NV03': 10, 'PP01': 8, 'TP01': 6 };
    var P = { 'Dễ': 1, 'Bình thường': 2, 'Nâng cao': 3, 'Khó': 4 };
@@ -967,7 +967,7 @@ thead th{ background: rgba(255,255,255,0.34); }
      T('PRJ001-002-NV02', 'Lên kịch bản MC chương trình', 'Tập trung văn phong trẻ trung', 'NV02', 'Bình thường', STATUS.TODO, 'PP01', '2026-08-15', 'Bình thường', 'PRJ-2026-001'),
      T('PRJ001-003-NV03', 'Liên hệ Media quay phim (Shooting)', 'Team 3 máy quay', 'NV03', 'Khó', STATUS.RUNNING, 'PP01', '2026-09-05', 'Khẩn cấp', 'PRJ-2026-001'),
    ];
-   return { departmentName: 'Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2', config: { 'Dễ': 1, 'Bình thường': 2, 'Nâng cao': 3, 'Khó': 4 }, members: members, tasks: tasks, projects: projects, sessions: {}, kpiTargets: kpiTargets, _adminPin: '291219' };
+   return { departmentName: 'Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2', config: { 'Dễ': 1, 'Bình thường': 2, 'Nâng cao': 3, 'Khó': 4 }, members: members, tasks: tasks, projects: projects, sessions: {}, kpiTargets: kpiTargets, _adminPin: '291219' };
  }
  function mockDB() {
    var raw = localStorage.getItem(MOCK_KEY);
@@ -1705,14 +1705,14 @@ thead th{ background: rgba(255,255,255,0.34); }
  }
 
  function renderLogin() {
-   var boot = state.boot || { departmentName: 'Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2' };
+   var boot = state.boot || { departmentName: 'Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2' };
    // Bảo mật: KHÔNG liệt kê toàn bộ nhân sự ở màn đăng nhập — người dùng TỰ NHẬP mã đăng nhập.
    var demoHint = (IS_GAS || GAS_API_URL)
      ? '<div class="demo-hint"><b>Hướng dẫn:</b> Nhập <b>mã đăng nhập</b> (do quản trị cấp) và <b>PIN cá nhân</b>.</div>'
      : '<div class="demo-hint"><b>Tài khoản demo</b> (PIN <b>123456</b>): TP01 · PP01 · NV01 · NV02.<br><a href="#" id="mock-reset" style="display:inline-block; margin-top:8px; font-weight:600">↺ Khôi phục dữ liệu mẫu gốc</a></div>';
    document.body.innerHTML =
      '<div class="login-wrap"><form class="login-card" id="login-form" autocomplete="off">' +
-     '<div class="brand"><div class="logo">' + icon3d("🏢", 40) + '</div><div><div class="brand-name">TC-HC ND2</div><div class="brand-sub" style="font-size:12px;color:var(--c-text-muted)">' + esc(boot.departmentName) + '</div></div></div>' +
+     '<div class="brand"><div class="logo">' + icon3d("🏢", 40) + '</div><div><div class="brand-name">TCCB ND2</div><div class="brand-sub" style="font-size:12px;color:var(--c-text-muted)">' + esc(boot.departmentName) + '</div></div></div>' +
      '<div class="stack">' +
      '<div class="field"><label>Mã đăng nhập</label><input id="login-code" required autocomplete="off" placeholder="Nhập mã đăng nhập" style="text-transform:uppercase"></div>' +
      '<div class="field"><label>Mã PIN cá nhân</label><input id="login-pin" type="password" inputmode="numeric" placeholder="Nhập PIN bảo mật" required></div>' +
@@ -1741,7 +1741,7 @@ thead th{ background: rgba(255,255,255,0.34); }
    var rs = el('mock-reset'); if (rs) rs.addEventListener('click', function (e) { e.preventDefault(); mockReset(); toast('Đã reset mẫu.', 'ok'); bootThenRender(); });
  }
 
- // Điều hướng chia thành 2 KHU VỰC riêng biệt: Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2 & Production Crew.
+ // Điều hướng chia thành 2 KHU VỰC riêng biệt: Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2 & Production Crew.
  function navGroups() {
    var u = state.user, groups = [];
    if (hasDeptBoard(u.role)) {
@@ -1750,8 +1750,7 @@ thead th{ background: rgba(255,255,255,0.34); }
        { page: 'work', icon: '✅', label: 'Công việc' }
      ];
      if (isManager(u)) dept.push({ page: 'members', icon: '👥', label: 'Nhân sự' });
-     if (isManager(u)) dept.push({ page: 'grants', icon: '🔑', label: 'Phân quyền' });
-     groups.push({ key: 'dept', icon: '🏢', title: (state.config && state.config.departmentName) || 'Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2', items: dept });
+     groups.push({ key: 'dept', icon: '🏢', title: (state.config && state.config.departmentName) || 'Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2', items: dept });
    }
    if (canViewCrew(u)) {
      groups.push({ key: 'prod', icon: '🎬', title: 'Production Crew', items: [
@@ -1796,7 +1795,7 @@ thead th{ background: rgba(255,255,255,0.34); }
    document.body.innerHTML =
      '<div class="scrim" id="scrim"></div><div class="app' + (collapsed ? ' sidebar-collapsed' : '') + '">' +
      '<aside class="sidebar" id="sidebar">' +
-     '<div class="brand"><div class="logo">' + icon3d("🏢", 40) + '</div><div><div class="brand-name">' + esc((state.config && state.config.departmentName) || 'Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2') + '</div><div class="brand-sub">Hệ thống Quản trị</div></div></div>' +
+     '<div class="brand"><div class="logo">' + icon3d("🏢", 40) + '</div><div><div class="brand-name">' + esc((state.config && state.config.departmentName) || 'Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2') + '</div><div class="brand-sub">Hệ thống Quản trị</div></div></div>' +
      '<nav class="nav">' + nav + '</nav>' +
      '<div class="userbox"><div class="row row--between">' +
      '<div class="userbox-id" data-action="open-avatar" title="Đổi ảnh đại diện" style="cursor:pointer;display:flex;gap:10px;align-items:center;min-width:0">' +
@@ -2979,7 +2978,7 @@ thead th{ background: rgba(255,255,255,0.34); }
    if (state.selectedMember) return renderMemberDetail(state.selectedMember);
    setTitle('Quản lý Nhân sự', 'Sắp xếp theo phòng/bộ phận · tìm theo tên hoặc mã · bấm vào một người để xem hồ sơ.');
    var byName = function (a, b) { return String(a.name).localeCompare(String(b.name), 'vi'); };
-   var deptName = (state.config && state.config.departmentName) || 'Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2';
+   var deptName = (state.config && state.config.departmentName) || 'Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2';
    // "Phòng/bộ phận" = 2 silo: Phòng (vai trò Phòng) và Production Crew (vai trò crew).
    var groups = [
      { icon: '🏢', title: deptName, members: state.members.filter(function (m) { return !isCrewRole(m.role); }).sort(byName) },

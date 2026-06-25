@@ -1,6 +1,6 @@
-# Quản lý công việc — Phòng Tổ chức Hành chính, Bệnh viện Nhi Đồng 2
+# Quản lý công việc — Phòng Tổ chức Cán bộ, Bệnh viện Nhi Đồng 2
 
-Ứng dụng web quản lý nhân sự & công việc cho **Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2**.
+Ứng dụng web quản lý nhân sự & công việc cho **Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2**.
 Backend Google Apps Script (Web App) + Google Sheets; giao diện một file (SPA), bản beta chạy trên GitHub Pages.
 
 > Đây là một **dự án độc lập hoàn toàn** — script, Google Sheet, deployment và repo riêng,

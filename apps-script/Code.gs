@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- *  QUẢN LÝ NHÂN SỰ & CÔNG VIỆC — PHÒNG TỔ CHỨC HÀNH CHÍNH - BỆNH VIỆN NHI ĐỒNG 2
+ *  QUẢN LÝ NHÂN SỰ & CÔNG VIỆC — PHÒNG TỔ CHỨC CÁN BỘ - BỆNH VIỆN NHI ĐỒNG 2
  *  Backend Google Apps Script (Web App) — lưu trữ trên Google Sheets
  * ----------------------------------------------------------------------------
  *  Kiến trúc:
@@ -94,7 +94,7 @@ var SESSION_TTL = 21600; // 6 giờ (giới hạn CacheService)
 function doGet(e) {
   return HtmlService.createTemplateFromFile('Index')
     .evaluate()
-    .setTitle('Quản lý công việc — Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2')
+    .setTitle('Quản lý công việc — Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
@@ -539,7 +539,7 @@ function readKpiTargets_() {
 // v18: thêm cột task startDate (ngày bắt đầu dự kiến) + needSupport/supportNote (yêu cầu hỗ trợ).
 // v19: tạo tài khoản ADMIN (vai trò ROLE.ADMIN, quyền cao nhất).
 // v20: ẨN ADMIN — chuyển credentials sang Script Property, XOÁ ADMIN khỏi sheet Members (không lưu pass/info ADMIN ở data storage).
-var MIG_VERSION = '20';
+var MIG_VERSION = '21';
 function ensureMigrated_() {
   try {
     var props = PropertiesService.getScriptProperties();
@@ -559,7 +559,7 @@ function bootstrap() {
   // Đăng nhập bằng cách NHẬP mã + PIN (không chọn từ dropdown).
   ensureMigrated_(); // chạy migrate_ MỘT LẦN sau mỗi lần deploy (kể cả khi bảng đã tồn tại sẵn).
   return {
-    departmentName: getConfigValue_('DepartmentName', 'Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2'),
+    departmentName: getConfigValue_('DepartmentName', 'Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2'),
     difficulties: difficultyList_(),
     statuses: STATUS_ORDER,
     members: []
@@ -635,7 +635,7 @@ function getState(token) {
     projects: projects,
     members: members,
     config: {
-      departmentName: getConfigValue_('DepartmentName', 'Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2'),
+      departmentName: getConfigValue_('DepartmentName', 'Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2'),
       difficulties: difficultyList_(),
       statuses: STATUS_ORDER
     },
@@ -1541,7 +1541,7 @@ function ensureDefaultGroups_(u) {
       writeChat_(c); chats.push(c); changed = true;
     } else if (c.memberCodes.indexOf(u.code) < 0) { c.memberCodes.push(u.code); writeChat_(c); changed = true; }
   }
-  if (hasDeptBoard_(u.role)) ensure('GRP-DEPT', getConfigValue_('DepartmentName', 'Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2'), function (r) { return !isCrewRole_(r); });
+  if (hasDeptBoard_(u.role)) ensure('GRP-DEPT', getConfigValue_('DepartmentName', 'Phòng Tổ chức Cán bộ - Bệnh viện Nhi Đồng 2'), function (r) { return !isCrewRole_(r); });
   // [TC-HC] Bỏ nhóm chat 'Production Crew' (đã gỡ crew).
   return changed;
 }
