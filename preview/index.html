@@ -933,7 +933,7 @@ thead th{ background: rgba(255,255,255,0.34); }
  }
  // Trả TÊN nếu viewer được phép thấy mã đó; nếu không (server đã lọc ẩn) -> "—" để KHÔNG lộ mã/nhân sự cấp cao/khác silo.
  function memberName(code) { if (String(code).toUpperCase() === 'ADMIN') return '***'; var m = state.members.filter(function (x) { return x.code === code; })[0]; return m ? m.name : (code ? '—' : ''); }
- // Mã rút gọn để hiển thị (bỏ hậu tố người-nhận/CHUA ở cuối): "20260520-001-TT01" -> "20260520-001". Giữ phần định danh duy nhất (prefix-seq).
+ // Mã rút gọn để hiển thị (bỏ hậu tố người-nhận/CHUA ở cuối): "20260520-001-NV01" -> "20260520-001". Giữ phần định danh duy nhất (prefix-seq).
  function shortTaskCode(code) { var p = String(code || '').split('-'); return p.length >= 3 ? p.slice(0, -1).join('-') : String(code || ''); }
 
  // =========================================================================
@@ -946,30 +946,26 @@ thead th{ background: rgba(255,255,255,0.34); }
    var members = [
      { code: 'TP01', name: 'Trưởng phòng', pin: '123456', role: ROLE.HEAD, title: 'Trưởng phòng Tổ chức Hành chính', active: true, createdAt: getLocalIso() },
      { code: 'PP01', name: 'Lê Minh Phó', pin: '123456', role: ROLE.DEPUTY, title: 'Phó phòng Nội dung', active: true, createdAt: getLocalIso() },
-     { code: 'TT01', name: 'Nguyễn An', pin: '123456', role: ROLE.STAFF, title: 'Nhân viên Thiết kế', active: true, createdAt: getLocalIso() },
-     { code: 'TT02', name: 'Trần Bình', pin: '123456', role: ROLE.STAFF, title: 'Nhân viên Nội dung', active: true, createdAt: getLocalIso() },
-     { code: 'TT03', name: 'Phạm Chi', pin: '123456', role: ROLE.STAFF, title: 'Nhân viên Tổ chức Hành chính', active: true, createdAt: getLocalIso() }
+     { code: 'NV01', name: 'Nguyễn An', pin: '123456', role: ROLE.STAFF, title: 'Nhân viên Thiết kế', active: true, createdAt: getLocalIso() },
+     { code: 'NV02', name: 'Trần Bình', pin: '123456', role: ROLE.STAFF, title: 'Nhân viên Nội dung', active: true, createdAt: getLocalIso() },
+     { code: 'NV03', name: 'Phạm Chi', pin: '123456', role: ROLE.STAFF, title: 'Nhân viên Tổ chức Hành chính', active: true, createdAt: getLocalIso() }
    ];
-   var kpiTargets = { 'TT01': 10, 'TT02': 10, 'TT03': 10, 'PP01': 8, 'TP01': 6 };
+   var kpiTargets = { 'NV01': 10, 'NV02': 10, 'NV03': 10, 'PP01': 8, 'TP01': 6 };
    var P = { 'Dễ': 1, 'Bình thường': 2, 'Nâng cao': 3, 'Khó': 4 };
    function T(code, title, desc, ac, diff, st, by, dl, pri, projId, crewTask) {
      return { taskCode: code, title: title, description: desc, assigneeCode: ac, difficulty: diff, kpiPoint: P[diff], status: st, createdBy: by, createdAt: getLocalIso(), deadline: dl, startedAt: (st !== STATUS.TODO ? getLocalIso() : ''), submittedAt: '', completedAt: (st === STATUS.DONE ? getLocalIso() : ''), reportLink: '', note: '', priority: pri || 'Bình thường', pauseHours: 0, projectId: projId || null, crewTask: !!crewTask, category: '', completeLink: '', phatSinh: false };
    }
 
    var projects = [
-     { id: 'PRJ-2026-001', name: 'Chiến dịch Khai giảng Thu 2026', leadCode: 'PP01', memberCodes: ['TT01', 'TT02', 'TT03'], eventDate: '2026-09-05', status: PROJ_STATUS.ACTIVE, createdAt: getLocalIso() }
+     { id: 'PRJ-2026-001', name: 'Chiến dịch Khai giảng Thu 2026', leadCode: 'PP01', memberCodes: ['NV01', 'NV02', 'NV03'], eventDate: '2026-09-05', status: PROJ_STATUS.ACTIVE, createdAt: getLocalIso() }
    ];
 
    var tasks = [
-     T('20260520-001-TT01', 'Cập nhật banner website', '', 'TT01', 'Bình thường', STATUS.TODO, 'TP01', '2026-08-25', 'Bình thường'),
+     T('20260520-001-NV01', 'Cập nhật banner website', '', 'NV01', 'Bình thường', STATUS.TODO, 'TP01', '2026-08-25', 'Bình thường'),
      // Project tasks
-     T('PRJ001-001-TT01', 'Thiết kế Backdrop sân khấu chính', 'Khổ 6x4m', 'TT01', 'Nâng cao', STATUS.RUNNING, 'PP01', '2026-08-20', 'Cao', 'PRJ-2026-001'),
-     T('PRJ001-002-TT02', 'Lên kịch bản MC chương trình', 'Tập trung văn phong trẻ trung', 'TT02', 'Bình thường', STATUS.TODO, 'PP01', '2026-08-15', 'Bình thường', 'PRJ-2026-001'),
-     T('PRJ001-003-TT03', 'Liên hệ Media quay phim (Shooting)', 'Team 3 máy quay', 'TT03', 'Khó', STATUS.RUNNING, 'PP01', '2026-09-05', 'Khẩn cấp', 'PRJ-2026-001'),
-     // Production Crew tasks (crewTask = true)
-     T('CREW-001-MM01', 'Dựng teaser 30s khai giảng', 'Bản 9:16 + 16:9', 'MM01', 'Nâng cao', STATUS.DONE, 'PD01', '2026-06-25', 'Bình thường', null, true),
-     T('CREW-002-PD02', 'Quay phóng sự hậu trường', 'Setup 3 máy', 'PD02', 'Khó', STATUS.RUNNING, 'PD01', '2026-06-28', 'Cao', null, true),
-     T('CREW-003-PD03', 'Chụp bộ ảnh profile giảng viên', '20 thầy cô', 'PD03', 'Bình thường', STATUS.TODO, 'PD01', '2026-07-02', 'Bình thường', null, true)
+     T('PRJ001-001-NV01', 'Thiết kế Backdrop sân khấu chính', 'Khổ 6x4m', 'NV01', 'Nâng cao', STATUS.RUNNING, 'PP01', '2026-08-20', 'Cao', 'PRJ-2026-001'),
+     T('PRJ001-002-NV02', 'Lên kịch bản MC chương trình', 'Tập trung văn phong trẻ trung', 'NV02', 'Bình thường', STATUS.TODO, 'PP01', '2026-08-15', 'Bình thường', 'PRJ-2026-001'),
+     T('PRJ001-003-NV03', 'Liên hệ Media quay phim (Shooting)', 'Team 3 máy quay', 'NV03', 'Khó', STATUS.RUNNING, 'PP01', '2026-09-05', 'Khẩn cấp', 'PRJ-2026-001'),
    ];
    return { departmentName: 'Phòng Tổ chức Hành chính - Bệnh viện Nhi Đồng 2', config: { 'Dễ': 1, 'Bình thường': 2, 'Nâng cao': 3, 'Khó': 4 }, members: members, tasks: tasks, projects: projects, sessions: {}, kpiTargets: kpiTargets, _adminPin: '291219' };
  }
@@ -1713,7 +1709,7 @@ thead th{ background: rgba(255,255,255,0.34); }
    // Bảo mật: KHÔNG liệt kê toàn bộ nhân sự ở màn đăng nhập — người dùng TỰ NHẬP mã đăng nhập.
    var demoHint = (IS_GAS || GAS_API_URL)
      ? '<div class="demo-hint"><b>Hướng dẫn:</b> Nhập <b>mã đăng nhập</b> (do quản trị cấp) và <b>PIN cá nhân</b>.</div>'
-     : '<div class="demo-hint"><b>Tài khoản demo</b> (PIN <b>123456</b>): TP01 · PP01 · TT01 · TT02 · TT03 · PD01 · PD02 · PD03 · MM01.<br><a href="#" id="mock-reset" style="display:inline-block; margin-top:8px; font-weight:600">↺ Khôi phục dữ liệu mẫu gốc</a></div>';
+     : '<div class="demo-hint"><b>Tài khoản demo</b> (PIN <b>123456</b>): TP01 · PP01 · NV01 · NV02.<br><a href="#" id="mock-reset" style="display:inline-block; margin-top:8px; font-weight:600">↺ Khôi phục dữ liệu mẫu gốc</a></div>';
    document.body.innerHTML =
      '<div class="login-wrap"><form class="login-card" id="login-form" autocomplete="off">' +
      '<div class="brand"><div class="logo">' + icon3d("🏢", 40) + '</div><div><div class="brand-name">TC-HC ND2</div><div class="brand-sub" style="font-size:12px;color:var(--c-text-muted)">' + esc(boot.departmentName) + '</div></div></div>' +
